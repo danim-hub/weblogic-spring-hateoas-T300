@@ -135,8 +135,8 @@ public class ${controllerClass}Test {
 #if($field.type != 'Date')
 #if($field.type == 'BigDecimal')
 		BigDecimalComparator comparator = new BigDecimalComparator();
-		comparator.compare(result.getBody().getPrice(), $fn.toUpperCase($field.name));
-		assertThat(true).isEqualTo(comparator.compare(result.getBody().getPrice(), $fn.toUpperCase($field.name)) == 0);
+		comparator.compare(result.getBody().${field.getter}(), $fn.toUpperCase($field.name));
+		assertThat(true).isEqualTo(comparator.compare(result.getBody().${field.getter}(), $fn.toUpperCase($field.name)) == 0);
 #else
 		assertThat(result.getBody().${field.getter}()).isEqualTo($fn.toUpperCase($field.name));
 #end
@@ -171,8 +171,8 @@ public class ${controllerClass}Test {
 #if($field.type != 'Date')
 #if($field.type == 'BigDecimal')
 		BigDecimalComparator comparator = new BigDecimalComparator();
-		comparator.compare(result.getBody().getPrice(), $fn.toUpperCase($field.name));
-		assertThat(true).isEqualTo(comparator.compare(result.getBody().getPrice(), $fn.toUpperCase($field.name)) == 0);
+		comparator.compare(result.getBody().${field.getter}(), $fn.toUpperCase($field.name));
+		assertThat(true).isEqualTo(comparator.compare(result.getBody().${field.getter}(), $fn.toUpperCase($field.name)) == 0);
 #else
 		assertThat(result.getBody().${field.getter}()).isEqualTo($fn.toUpperCase($field.name));
 #end
@@ -212,8 +212,8 @@ public class ${controllerClass}Test {
 #mockNewValue($field)
 #if($field.type != 'Date')
 #if($field.type == 'BigDecimal')
-		comparator.compare(result.getBody().getPrice(), $mockNewValue);
-		assertThat(true).isEqualTo(comparator.compare(result.getBody().getPrice(), $mockNewValue) == 0);
+		comparator.compare(result.getBody().${field.getter}(), $mockNewValue);
+		assertThat(true).isEqualTo(comparator.compare(result.getBody().${field.getter}(), $mockNewValue) == 0);
 #else
 		assertThat(result.getBody().${field.getter}()).isEqualTo($mockNewValue);
 #end
