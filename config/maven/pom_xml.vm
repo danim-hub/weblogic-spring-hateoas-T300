@@ -5,7 +5,7 @@
 	<artifactId>$fn.get("MAVEN_ARTIFACT_ID","to.be.defined")</artifactId>
 	<version>$fn.get("PROJECT_VERSION","to.be.defined")</version>
 
-	<description>Sample application for telosys template generation</description>
+	<description>$fn.get("PROJECT_NAME","to.be.defined")</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
