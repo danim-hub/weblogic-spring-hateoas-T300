@@ -123,7 +123,7 @@ public class $controllerClass {
 		}
 	}
 
-	@PutMapping(value = "$mappingPath", consumes = "application/json")
+	@PutMapping(value = "$mappingPath", consumes = "application/json", produces = "application/json")
 	public ResponseEntity<Void> update($pathVariable, @RequestBody $entityClass $entityInstance) {
 		LOGGER.info("$entityClass update request [id={} | $entityInstance={}}", resolveIdForLogger($keyArgsList), $entityInstance);
 		// force the id (use the id provided by the URL)

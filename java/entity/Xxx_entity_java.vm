@@ -41,7 +41,12 @@ $jpa.fieldAnnotations(4, $field)
     // ENTITY DATA FIELDS 
     //----------------------------------------------------------------------    
 #foreach($field in $entity.nonKeyAttributes)
+#if ($field.name == "timestamp")
+    @Column(name="timestamp", insertable = false, updatable = false)
+    @GeneratedValue
+#else
 $jpa.fieldAnnotations(4, $field)
+#end
     private $field.type $field.name #if($field.hasInitialValue())= ${field.initialValue} #end; #if($field.isFK())// Foreign Key #end 
 #end
 
