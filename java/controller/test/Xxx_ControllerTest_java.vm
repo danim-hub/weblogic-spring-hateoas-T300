@@ -109,6 +109,8 @@ public class ${controllerClass}Test {
 	#set($mockArgumentloop = "${mockArgumentloop},new Short((short) ($fn.toUpperCase($field.name) + i))")
 #elseif($field.type == 'String')
 	#set($mockArgumentloop = "${mockArgumentloop},String.valueOf(i)")
+#elseif($field.type == 'byte[]')
+	#set($mockArgumentloop = "${mockArgumentloop},$fn.toUpperCase($field.name)")
 #else
 	#set($mockArgumentloop = "${mockArgumentloop},$fn.toUpperCase($field.name) + i")
 #end
@@ -131,10 +133,14 @@ public class ${controllerClass}Test {
 		// Assert the Hateoas self link
 		Link link = new Link("http://localhost:9999${fullPath}", Link.REL_SELF);
 		assertThat(result.getBody().getId()).isEqualTo(link);
+#set($bigDecimalComparatorDeclared = false)
 #foreach($field in $entity.nonKeyAttributes)
 #if($field.type != 'Date')
 #if($field.type == 'BigDecimal')
+#if(!$bigDecimalComparatorDeclared)
 		BigDecimalComparator comparator = new BigDecimalComparator();
+#set($bigDecimalComparatorDeclared = true)
+#end
 		comparator.compare(result.getBody().${field.getter}(), $fn.toUpperCase($field.name));
 		assertThat(true).isEqualTo(comparator.compare(result.getBody().${field.getter}(), $fn.toUpperCase($field.name)) == 0);
 #else
