@@ -132,12 +132,12 @@ public class $serviceClass implements $serviceInterface {
 
 		@Override
 		public Predicate toPredicate(Root<$entityClass> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
-			final List<Predicate> predicates = new ArrayList<>();
+			final List<Predicate> predicates = new ArrayList<Predicate>();
 #foreach($field in $entity.nonKeyAttributes)
 #if($field.type == 'String')
 #set($fieldName = $fn.capitalize($field.name))
 			if (StringUtils.isNotBlank(criteria.get${fieldName}())) {
-				predicates.add(builder.like(builder.lower(root.get("$field.name")),
+				predicates.add(builder.like(builder.lower(root.<String>get("$field.name")),
 						criteria.get${fieldName}().toLowerCase() + "%"));
 			}
 #end

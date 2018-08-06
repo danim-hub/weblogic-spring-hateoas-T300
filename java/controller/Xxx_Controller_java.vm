@@ -43,11 +43,8 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -79,51 +76,51 @@ public class $controllerClass {
 	private $assemblerClass $assemblerInstance = new $assemblerClass();
 
 #if($haveCriteria)
-	@GetMapping
+	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<PagedResources<$resourceClass>> search(Pageable pageable, $criteriaClass criteria) {
 		LOGGER.info("${entityClass}s search [pageable={}|$criteriaClass={}", pageable, criteria);
 		final Page<$entityClass> result = ${serviceInstance}.search(pageable, criteria);
 		LOGGER.info("Found {} ${entityInstance}s !", result.getSize());
-		return new ResponseEntity<>(pageAssember.toResource(result, $assemblerInstance), HttpStatus.OK);
+		return new ResponseEntity<PagedResources<$resourceClass>>(pageAssember.toResource(result, $assemblerInstance), HttpStatus.OK);
 	}
 #else
-	@GetMapping
+	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<PagedResources<$resourceClass>> search(Pageable pageable) {
 		LOGGER.info("${entityClass}s search [pageable={}", pageable);
 		final Page<$entityClass> result = ${serviceInstance}.search(pageable);
 		LOGGER.info("Found {} ${entityInstance}s !", result.getSize());
-		return new ResponseEntity<>(pageAssember.toResource(result, $assemblerInstance), HttpStatus.OK);
+		return new ResponseEntity<PagedResources<$resourceClass>>(pageAssember.toResource(result, $assemblerInstance), HttpStatus.OK);
 	}
 #end
 
-	@GetMapping("$mappingPath")
+	@RequestMapping(method = RequestMethod.GET, value = "$mappingPath")
 	public ResponseEntity<$resourceClass> get($pathVariable) {
 		Application.setDateFormat(objectMapper);
 		LOGGER.info("$entityClass get with id {}", resolveIdForLogger($keyArgsList));
 		final $entityClass $entityInstance = ${serviceInstance}.get($keyArgsList);
 		if ($entityInstance == null) {
 			LOGGER.info(NOT_FOUND);
-			return new ResponseEntity<>(($resourceClass) null, HttpStatus.NOT_FOUND);
+			return new ResponseEntity<$resourceClass>(($resourceClass) null, HttpStatus.NOT_FOUND);
 		}
 		LOGGER.info("$entityClass found : {}", $entityInstance);
 		final $resourceClass $resourceInstance = ${assemblerInstance}.toResource($entityInstance);
-		return new ResponseEntity<>($resourceInstance, HttpStatus.OK);
+		return new ResponseEntity<$resourceClass>($resourceInstance, HttpStatus.OK);
 	}
 
-	@PostMapping(consumes = "application/json")
+	@RequestMapping(method = RequestMethod.POST, consumes = "application/json")
 	public ResponseEntity<$resourceClass> create(@RequestBody $entityClass $entityInstance) {
 		LOGGER.info("$entityClass creation request : {}", $entityInstance);
 		if (${serviceInstance}.exist($entityInstance)) {
 			LOGGER.info("$entityClass already exist ! : {}", $entityInstance);
-			return new ResponseEntity<>(($resourceClass) null, HttpStatus.CONFLICT);
+			return new ResponseEntity<$resourceClass>(($resourceClass) null, HttpStatus.CONFLICT);
 		} else {
 			final $entityClass created = ${serviceInstance}.create($entityInstance);
 			LOGGER.info("Created $entityInstance {}", created);
-			return new ResponseEntity<>(${assemblerInstance}.toResource(created), HttpStatus.OK);
+			return new ResponseEntity<$resourceClass>(${assemblerInstance}.toResource(created), HttpStatus.OK);
 		}
 	}
 
-	@PutMapping(value = "$mappingPath", consumes = "application/json", produces = "application/json")
+	@RequestMapping(method = RequestMethod.PUT, value = "$mappingPath", consumes = "application/json", produces = "application/json")
 	public ResponseEntity<Void> update($pathVariable, @RequestBody $entityClass $entityInstance) {
 		LOGGER.info("$entityClass update request [id={} | $entityInstance={}}", resolveIdForLogger($keyArgsList), $entityInstance);
 		// force the id (use the id provided by the URL)
@@ -132,22 +129,22 @@ public class $controllerClass {
 #end
 		if (${serviceInstance}.save($entityInstance)) {
 			LOGGER.info("$entityClass succesfully updated");
-			return new ResponseEntity<>(HttpStatus.OK);
+			return new ResponseEntity<Void>(HttpStatus.OK);
 		} else {
 			LOGGER.info(NOT_FOUND);
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
 		}
 	}
 
-	@DeleteMapping("$mappingPath")
+	@RequestMapping(method = RequestMethod.DELETE, value = "$mappingPath")
 	public ResponseEntity<Void> delete($pathVariable) {
 		LOGGER.info("$entityClass deletion request : {}", resolveIdForLogger($keyArgsList));
 		if (${serviceInstance}.delete($keyArgsList)) {
 			LOGGER.info("$entityClass succesfully deleted");
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 		} else {
 			LOGGER.info(NOT_FOUND);
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
 		}
 	}
 
