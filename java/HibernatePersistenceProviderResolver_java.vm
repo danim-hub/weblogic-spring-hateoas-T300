@@ -1,0 +1,31 @@
+package ${ROOT_PKG};
+
+import java.util.Collections;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.persistence.spi.PersistenceProvider;
+import javax.persistence.spi.PersistenceProviderResolver;
+import javax.persistence.spi.PersistenceProviderResolverHolder;
+
+import org.hibernate.jpa.HibernatePersistenceProvider;
+
+public class HibernatePersistenceProviderResolver implements PersistenceProviderResolver {
+	private static final Logger LOGGER = LoggerFactory.getLogger(HibernatePersistenceProviderResolver.class);
+
+    private volatile PersistenceProvider persistenceProvider = new HibernatePersistenceProvider();
+
+    public List<PersistenceProvider> getPersistenceProviders() {
+        return Collections.singletonList(persistenceProvider);
+    }
+
+    public void clearCachedProviders() {
+        persistenceProvider = new HibernatePersistenceProvider();
+    }
+
+    public static void register() {
+        LOGGER.info("Registering HibernatePersistenceProviderResolver");
+        PersistenceProviderResolverHolder.setPersistenceProviderResolver(new HibernatePersistenceProviderResolver());
+    }
+}

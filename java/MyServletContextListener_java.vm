@@ -1,0 +1,21 @@
+package ${ROOT_PKG};
+
+import javax.servlet.ServletContextEvent;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class MyServletContextListener implements javax.servlet.ServletContextListener {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(MyServletContextListener.class);
+
+	public void contextDestroyed(ServletContextEvent arg0) {
+		LOGGER.info("contextDestroyed");
+	}
+
+	public void contextInitialized(ServletContextEvent arg0) {
+		LOGGER.info("contextInitialized starting");
+		HibernatePersistenceProviderResolver.register();
+		LOGGER.info("contextInitialized finished");
+	}
+}

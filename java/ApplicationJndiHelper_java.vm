@@ -1,0 +1,68 @@
+package ${ROOT_PKG};
+
+import java.util.Properties;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NameClassPair;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+
+public class ApplicationJndiHelper {
+
+    /**
+     * Weblogic JNDI Factory
+     */
+
+    private static final String WEBLOGIC_JNDI_WL_INITIAL_CONTEXT_FACTORY = "weblogic.jndi.WLInitialContextFactory";
+
+    static int entries = 0;
+
+    public static void listContext(String providerURL) {
+        // Set up the environment for creating the initial context
+        Properties env = new Properties();
+        env.put(Context.INITIAL_CONTEXT_FACTORY, WEBLOGIC_JNDI_WL_INITIAL_CONTEXT_FACTORY);
+        // env.put(Context.PROVIDER_URL, providerURL);
+
+        try {
+            // Create the initial context
+            Context initial = new InitialContext(env);
+            Context ctx = (Context) initial.lookup("java:comp");
+
+            System.out.println("====== STARTING LISTING ===== ");
+            entries = 0;
+            printList(ctx, "/");
+            System.out.println("======  LISTING FINISHED ===== ");
+
+            // Close the context when we're done
+            ctx.close();
+        } catch (NamingException e) {
+            System.out.println("List failed: " + e);
+        }
+    }
+
+    public static void printList(Context ctx, String path) throws NamingException {
+
+        // Get listing of context
+        NamingEnumeration<NameClassPair> list = ctx.list("");
+
+        // Go through each item in list
+        while (list.hasMore()) {
+            // avoid looping
+            if (++entries > 1000)
+                break;
+            NameClassPair nc = (NameClassPair) list.next();
+            System.out.println(path + nc);
+            try {
+                Object tmp = ctx.lookup(nc.getName());
+                if (tmp instanceof Context) {
+                    printList((Context) tmp, path + nc.getName() + "/");
+                }
+            } catch (NamingException e) {
+                System.out.println("Cannot read " + nc.getName() + ": " + e);
+            }
+        }
+
+    }
+
+}
