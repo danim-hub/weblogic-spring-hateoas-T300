@@ -6,14 +6,18 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jndi.JndiObjectFactoryBean;
 import org.springframework.web.WebApplicationInitializer;
 
 import java.text.SimpleDateFormat;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 //Tell Spring to automatically inject any dependencies that are marked in
 //our classes with @Autowired
@@ -21,16 +25,34 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 // Tell Spring that this object represents a Configuration for the
 // application
 @Configuration
-// Application is a SpringBootServletInitializer subclass and override its configure method.
+// Application is a SpringBootServletInitializer subclass and override its
+// configure method.
 @ComponentScan
 public class Application extends SpringBootServletInitializer implements WebApplicationInitializer {
 
+	/**
+	 * Application Datasource name, must be defined in weblogic console
+	 */
+	private static final String DATASOURCE_JNDI = "jdbc/$fn.get("DATASOURCE","default-datasource")";
 	private static boolean iso8601FormatSet = false;
 	private static final SimpleDateFormat ISO8601_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 	private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
+	}
+
+	@Bean
+	public DataSource dataSource() {
+		ApplicationJndiHelper.listContext("java:comp/env");
+		JndiObjectFactoryBean jndiObjectFactoryBean = new JndiObjectFactoryBean();
+		jndiObjectFactoryBean.setJndiName(DATASOURCE_JNDI);
+		try {
+			jndiObjectFactoryBean.afterPropertiesSet();
+		} catch (NamingException e) {
+			LOGGER.error("Error while retrieving datasource with JNDI name " + DATASOURCE_JNDI, e);
+		}
+		return (DataSource) jndiObjectFactoryBean.getObject();
 	}
 
 	public static void setDateFormat(ObjectMapper objectMapper) {

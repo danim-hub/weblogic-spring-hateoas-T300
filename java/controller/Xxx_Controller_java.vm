@@ -107,7 +107,7 @@ public class $controllerClass {
 		return new ResponseEntity<$resourceClass>($resourceInstance, HttpStatus.OK);
 	}
 
-	@RequestMapping(method = RequestMethod.POST, consumes = "application/json")
+	@RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	public ResponseEntity<$resourceClass> create(@RequestBody $entityClass $entityInstance) {
 		LOGGER.info("$entityClass creation request : {}", $entityInstance);
 		if (${serviceInstance}.exist($entityInstance)) {
