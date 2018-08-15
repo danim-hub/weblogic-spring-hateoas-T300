@@ -117,7 +117,8 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>3.7</version>
+            <!-- commons-lang3 v3.5 is the last version supporting java 6 -->
+			<version>3.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
