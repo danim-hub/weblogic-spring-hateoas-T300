@@ -42,13 +42,18 @@ public class Application extends SpringBootServletInitializer implements WebAppl
 		SpringApplication.run(Application.class, args);
 	}
 
+	@ConfigurationProperties(prefix = "spring.datasource")
 	@Bean
+	@Primary
 	public DataSource dataSource() {
-		ApplicationJndiHelper.listContext("java:comp/env");
+		ApplicationJndiHelper.listContext("java:comp/env", null);
 		JndiObjectFactoryBean jndiObjectFactoryBean = new JndiObjectFactoryBean();
 		jndiObjectFactoryBean.setJndiName(DATASOURCE_JNDI);
 		try {
 			jndiObjectFactoryBean.afterPropertiesSet();
+		} catch (NoInitialContextException e) {
+			LOGGER.warn("No initial context, trying with default datasource");
+			return DataSourceBuilder.create().build();
 		} catch (NamingException e) {
 			LOGGER.error("Error while retrieving datasource with JNDI name " + DATASOURCE_JNDI, e);
 		}
